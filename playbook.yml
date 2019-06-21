@@ -1,0 +1,51 @@
+---
+- name: Ogar Deployment
+  hosts: all
+  become: yes
+
+  tasks:
+  - name: Add GPG Key For Docker
+    apt_key: url=https://download.docker.com/linux/ubuntu/gpg
+
+  - name: Add APT repository For Docker
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable
+
+  - name: Packages Install
+    package:
+      name: "{{ item }}"
+      state: installed
+      update_cache: yes
+    with_items:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose
+
+  - git:
+      repo: https://github.com/Faris90/Ogar3.git
+      dest: /node_app/ogar
+
+  - name: Copy Dockerfile
+    copy:
+      src: ./Dockerfile
+      dest: /node_app/Dockerfile
+
+  - name: Copy docker-compose.yml File
+    copy:
+      src: ./docker-compose.yml
+      dest: /node_app/docker-compose.yml
+
+  - name: Docker-Compose Build
+    shell: docker-compose build
+    args:
+      chdir: /node_app/
+
+  - name: Docker-Compose up
+    shell: docker-compose up -d 
+    args:
+      chdir: /node_app/
