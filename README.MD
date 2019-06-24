@@ -1,10 +1,10 @@
 # Make your own agario server on EC2 
 
-##About Project
+## About Project
 
 Project contain docker and ansible to deployment agario server on EC2 Instance
 
-###Requirements
+### Requirements
 
 Debian family OS AMI
 
