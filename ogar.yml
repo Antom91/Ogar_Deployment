@@ -1,0 +1,16 @@
+---
+- hosts: local
+  connection: local
+  gather_facts: yes
+
+  roles:
+   - { role: ec2 }
+
+- hosts: nodejsserver
+  remote_user: "{{ ec2_user }}"
+  become: yes
+  gather_facts: yes
+
+  roles:
+   - { role: nodejs }
+

@@ -1,0 +1,48 @@
+---
+# tasks file for ec2
+    - name: Creating Security Group
+      ec2_group:
+        name: "{{ ec2_security_group }}"
+        description: Security Group For Ogar3 Project
+        region: "{{ ec2_region }}"
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 80
+            to_port: 80
+            cidr_ip: 0.0.0.0/0
+        rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0
+
+    - name: Create EC2 Instance
+      ec2:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        group: "{{ ec2_security_group }}"
+        instance_type: "{{ ec2_instance_type }}"
+        image: "{{ ec2_image }}"
+        wait: true
+        region: "{{ ec2_region }}"
+        keypair: "{{ ec2_keypair }}"
+        count: 1
+      register: ec2
+
+    - name: Adding EC2 Server To host
+      add_host:
+        name: "{{ item.public_ip }}"
+        groups: nodejsserver
+      with_items: "{{ ec2.instances }}"
+
+    - name: Wait for SSH up
+      wait_for:
+        host: "{{ item.public_ip }}"
+        port: 22
+        state: started
+      with_items: "{{ ec2.instances }}"
+

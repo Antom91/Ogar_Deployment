@@ -1,0 +1,9 @@
+---
+# vars file for ec2
+    ec2_instance_type: t2.micro
+    ec2_security_group: nodejs_sg
+    ec2_image: ami-024a64a6685d05041
+    ec2_region: us-east-1
+    ec2_keypair: Virginia_toshuk
+    aws_access_key: 123456
+    aws_secret_key: 123456
